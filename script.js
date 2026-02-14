@@ -291,14 +291,28 @@ function endGame() {
 // Obtener posición del mouse/touch
 function getMousePos(e) {
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    let clientX, clientY;
+    
+    if (e.touches && e.touches.length > 0) {
+        // Es un evento touch
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else if (e.changedTouches && e.changedTouches.length > 0) {
+        // Touch que acaba de terminar
+        clientX = e.changedTouches[0].clientX;
+        clientY = e.changedTouches[0].clientY;
+    } else {
+        // Es un evento de mouse
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
     
     return {
         x: clientX - rect.left,
         y: clientY - rect.top
     };
 }
+
 
 // Iniciar arrastre
 function startDrag(e) {
@@ -310,9 +324,18 @@ function startDrag(e) {
     const dy = pos.y - player.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance <= player.radius + 10) {
+    // En móvil (touch), permitir arrastrar el círculo hacia donde tocas
+    // En PC (mouse), solo si haces click sobre el círculo
+    if (e.type.includes('touch')) {
+        // Touch: siempre permitir arrastre
         isDragging = true;
         canvas.style.cursor = "grabbing";
+    } else {
+        // Mouse: solo si haces click sobre el círculo
+        if (distance <= player.radius + 10) {
+            isDragging = true;
+            canvas.style.cursor = "grabbing";
+        }
     }
 }
 
