@@ -317,26 +317,10 @@ function getMousePos(e) {
 // Iniciar arrastre
 function startDrag(e) {
     if (!gameRunning) return;
-    
     e.preventDefault();
-    const pos = getMousePos(e);
-    const dx = pos.x - player.x;
-    const dy = pos.y - player.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    // En móvil (touch), permitir arrastrar el círculo hacia donde tocas
-    // En PC (mouse), solo si haces click sobre el círculo
-    if (e.type.includes('touch')) {
-        // Touch: siempre permitir arrastre
-        isDragging = true;
-        canvas.style.cursor = "grabbing";
-    } else {
-        // Mouse: solo si haces click sobre el círculo
-        if (distance <= player.radius + 10) {
-            isDragging = true;
-            canvas.style.cursor = "grabbing";
-        }
-    }
+    
+    isDragging = true;
+    canvas.style.cursor = "grabbing";
 }
 
 // Arrastrar
@@ -346,30 +330,55 @@ function drag(e) {
 
     const pos = getMousePos(e);
 
-    // Guardar posición anterior
-    const oldX = player.x;
-    const oldY = player.y;
+    // Calcular dirección hacia donde se toca
+    const targetX = Math.max(player.radius, Math.min(canvas.width - player.radius, pos.x));
+    const targetY = Math.max(player.radius, Math.min(canvas.height - player.radius, pos.y));
 
-    // Calcular nueva posición
-    const newX = Math.max(player.radius, Math.min(canvas.width - player.radius, pos.x));
-    const newY = Math.max(player.radius, Math.min(canvas.height - player.radius, pos.y));
-
-    // Aplicar nueva posición temporalmente
-    player.x = newX;
-    player.y = newY;
-
-    // Verificar si la nueva posición choca con paredes
-    const level = levels[currentLevel];
-    for (let w of level.walls) {
-        if (circleRectCollision(player, w)) {
-            // Si choca, volver a la posición anterior
-            player.x = oldX;
-            player.y = oldY;
-            return;
+    // Calcular paso a paso hacia el objetivo (movimiento suave)
+    const dx = targetX - player.x;
+    const dy = targetY - player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    // Si ya está muy cerca del objetivo, moverse directamente
+    if (distance < 5) {
+        player.x = targetX;
+        player.y = targetY;
+    } else {
+        // Moverse un paso hacia el objetivo
+        const speed = Math.min(distance, 8); // Velocidad máxima de 8 píxeles por frame
+        const moveX = (dx / distance) * speed;
+        const moveY = (dy / distance) * speed;
+        
+        // Guardar posición anterior
+        const oldX = player.x;
+        const oldY = player.y;
+        
+        // Intentar mover en X
+        player.x += moveX;
+        const level = levels[currentLevel];
+        let collisionX = false;
+        
+        for (let w of level.walls) {
+            if (circleRectCollision(player, w)) {
+                collisionX = true;
+                player.x = oldX; // Revertir X
+                break;
+            }
+        }
+        
+        // Intentar mover en Y
+        player.y += moveY;
+        let collisionY = false;
+        
+        for (let w of level.walls) {
+            if (circleRectCollision(player, w)) {
+                collisionY = true;
+                player.y = oldY; // Revertir Y
+                break;
+            }
         }
     }
 
-    // Si no choca, mantener la nueva posición
     updateTrail();
     
     // Crear partículas mientras se mueve
@@ -378,7 +387,7 @@ function drag(e) {
     }
 
     // Verificar colisión con objetivo
-    if (circleRectCollision(player, level.goal)) {
+    if (circleRectCollision(player, levels[currentLevel].goal)) {
         levelChanging = true;
         nextLevel();
     }
