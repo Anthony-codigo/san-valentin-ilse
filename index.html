@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Para mi amorcito❤️</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Corazones flotantes de fondo -->
+    <div class="hearts-bg">
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+    </div>
+
+    <!-- Pantalla de inicio -->
+    <div id="startScreen" class="screen active">
+        <div class="container">
+            <h1 class="title">Para Ilse el amor de mi vida 💖</h1>
+            <p class="subtitle">Anthony tiene un reto especial para ti...</p>
+            <p class="instructions">Arrastra el círculo hasta cada objetivo sin tocar las paredes</p>
+            <button id="startBtn" class="btn-primary">Comenzar 💕</button>
+        </div>
+    </div>
+
+    <!-- Contenedor del juego -->
+    <div id="gameContainer" class="game-container">
+        <div id="levelInfo" class="level-info">
+            <span id="levelNumber">Nivel 1 de 3</span>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div id="levelMessage" class="level-message"></div>
+    </div>
+
+    <!-- Pantalla final -->
+    <div id="finalScreen" class="screen">
+        <div class="container">
+            <h1 class="title animate-in">Feliz San Valentín Mi amorcito 💍</h1>
+            
+            <p class="final-text animate-in">
+                Mi amorcito ilse, superaste cada obstáculo como nosotros superamos todo juntos.<br>
+                Cada nivel representa lo que construimos día a día.<br><br>
+                <strong>🌹 La Rosa:</strong> El inicio de algo hermoso<br>
+                <strong>💖 El Corazón:</strong> El amor que crece cada día<br>
+                <strong>💍 El Anillo:</strong> El futuro que quiero contigo<br><br>
+                Gracias por ser mi rosa 🌹, mi corazón 💖 y el anillo que quiero en mi futuro 💍.<br><br>
+                Con todo mi amor,<br>
+                <span class="signature">Anthony ❤️</span>
+            </p>
+
+            <div class="gallery">
+                <img src="assets/foto1.jpg" alt="Recuerdo 1" class="animate-in">
+                <img src="assets/foto2.jpg" alt="Recuerdo 2" class="animate-in">
+                <img src="assets/foto3.jpg" alt="Recuerdo 3" class="animate-in">
+            </div>
+
+            <button id="playMusic" class="btn-primary">Activar música 🎶</button>
+            <button id="restartBtn" class="btn-secondary">Jugar de nuevo</button>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="assets/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
